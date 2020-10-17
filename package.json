@@ -1,0 +1,19 @@
+{
+  "name": "hepsub-rtpengine",
+  "version": "1.0.0",
+  "description": "HEPSUB-RTPEngine integration",
+  "main": "rtpengine.js",
+  "scripts": {
+    "start": "node rtpengine.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "find": "^0.2.9",
+    "lru": "^3.1.0",
+    "request": "^2.88.0",
+    "uuid": "^3.3.2"
+  }
+}

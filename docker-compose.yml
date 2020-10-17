@@ -1,0 +1,14 @@
+version: '2.1'
+
+services:
+  hepsub:
+    container_name: hepsub-rtpengine
+    image: sipcapture/hepsub-rtpengine:latest
+    ports:
+      - "18088:18088"
+    environment:
+      - PUBLIC_IP=${PUBLIC_IP:-hepsub}
+      - HOMER_IP=${HOMER_IP:-homer}
+      - HOMER_PORT=${HOMER_PORT:-9080}
+      - HOMER_TOKEN=${HOMER_TOKEN:-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX}
+    restart: unless-stopped
