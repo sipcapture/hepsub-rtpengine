@@ -5,8 +5,8 @@ services:
     privileged: true
     restart: always
     environment:
-      - ADVERTISED_RANGE_FIRST: 20000
-      - ADVERTISED_RANGE_LAST: 20100
+      - ADVERTISED_RANGE_FIRST=20000
+      - ADVERTISED_RANGE_LAST=20100
       - PUBLIC_IP=${PUBLIC_IP:-hepsub}
       - HOMER_IP=${HOMER_IP:-homer}
       - HOMER_PORT=${HOMER_PORT:-9080}
@@ -18,4 +18,5 @@ services:
       - "9060:9060/udp"
       - "5060:5060/udp"
       - "5061:5061/tcp"
+      - "18088:18088"
       - "20000-20100:20000-20100/udp"

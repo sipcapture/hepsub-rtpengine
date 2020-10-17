@@ -56,12 +56,12 @@ app.all('*', function(req, res, next) {
 // HEP Post Paths
 app.post('/get/:id', async function (req, res) {
   try {
+	  var apiresponse = {};
 	  var data = req.body;
 	  console.log('NEW API POST REQ', JSON.stringify(data));
 	  // API ban relay
-	  if (data.data.callid && id == 'wav') {
-	    var apiresponse = {};
-	    await Promise.all(data.data.callid(async (cid) => {
+	  if (data.data.sid) {
+	    await Promise.all(data.data.sid(async (cid) => {
 	    	var cached = cache.get(cid);
 	    	if (cached) {
 			apiresponse[cid] = JSON.parse(cached);
