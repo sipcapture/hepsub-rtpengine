@@ -94,7 +94,8 @@ app.post('/get/:id', async function (req, res) {
 })
 
 
-app.post('/recording/pcaps/:file', async function (req, res) {
+// TODO: POST ONLY w/ Token
+app.all('/recording/pcaps/:file', async function (req, res) {
   try {
 	var data = req.body;
 	console.log('NEW DOWNLOAD REQ', JSON.stringify(data), req.params.file);
