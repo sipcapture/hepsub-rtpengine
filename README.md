@@ -5,7 +5,7 @@
 
 [HOMER](https://github.com/sipcapture/homer-app) Seven allows external agents to subscribe capabilities to provide *"on-demand"* session details from external APIs, databases, etc. to argument internally available data without requiring data duplication and allowing creative use of the core HEP platform.
 
-This HEPSUB client will receive on-demand request from HOMER sessions, and will attempt locate RTP:Engine metadata and PCAP recordings.
+The **HEPSUB RTP:Engine** client will receive on-demand request from HOMER sessions, and will return any local metadata and PCAP recordings.
 
 ```
 [ HOMER ] <---> [ HEPSUB-RTPENGINE ] <---> [ RTPENGINE META/PCAP ]
