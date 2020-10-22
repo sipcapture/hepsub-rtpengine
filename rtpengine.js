@@ -34,7 +34,7 @@ watcher
 		if (path.endsWith('.pcap')){
 			var index = {};
 			index.pcap = path;
-			index.cid = { cid = path.match(/\/([^\/]+)\/?\.pcap$/)[1].split('-')[0]; } catch(e) { console.log(e); }
+			try { index.cid = path.match(/\/([^\/]+)\/?\.pcap$/)[1].split('-')[0]; } catch(e) { console.log(e); }
 			var stats = fs.statSync(index.pcap);
 			var datenow = stats.mtime ? new Date(stats.mtime).getTime() : new Date().getTime();
 			index.t_sec = Math.floor( datenow / 1000);
