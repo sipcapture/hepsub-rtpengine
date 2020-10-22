@@ -2,7 +2,9 @@ var config = {
   backend: "http://HOMER_IP_HERE:HOMER_PORT_HERE/api/v3/agent/subscribe",
   token: "HOMER_TOKEN_HERE",
   rtpengine: {
-	"path" : "/recording"
+	"path" : "/recording",
+        "download" : true,
+        "insecure" : true
   },
   service: {
 	"uuid": Math.random().toString(36).substring(7),

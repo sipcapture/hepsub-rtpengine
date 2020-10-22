@@ -30,7 +30,7 @@ const watcher = chokidar.watch('/recording', {ignored: /^\./, persistent: true }
 watcher
     .on('error', function(error) {console.error('Error happened', error);})
     .on('add', function(path) {
-		console.log('File', path, 'has been added');
+		if (config.debug) console.log('File', path, 'has been added');
 		if (path.endsWith('.pcap')){
 			var index = {};
 			index.pcap = path;
@@ -39,28 +39,28 @@ watcher
 			var datenow = stats.mtime ? new Date(stats.mtime).getTime() : new Date().getTime();
 			index.t_sec = Math.floor( datenow / 1000);
 			index.u_sec = ( datenow - (index.t_sec*1000))*1000;
-			console.log('PCAP Hit!', index);
+			if (config.debug) console.log('PCAP Hit!', index);
 			cache.set(index.cid, JSON.stringify(index));
 		}
     })
     // .on('change', function(path) {console.log('File', path, 'has been changed'); })
-    .on('unlink', function(path) {console.log('File', path, 'has been removed. Indexing!');
+    .on('unlink', function(path) { if (config.debug) console.log('File', path, 'has been removed. Indexing!');
 	   if(path.includes('rtpengine-meta')){
-                var index = {}; // Recording Object
-		index.meta = path;
-                index.meta = index.meta.replace(/tmp\//i, 'metadata/');
-                index.meta = index.meta.replace(/\.tmp/i, '.txt');
-                index.pcap = path;
-                index.pcap = index.pcap.replace(/tmp\/rtpengine-meta-/i, 'pcaps/');
-                index.pcap = index.pcap.replace(/\.tmp/i, '.pcap');
+                	var index = {}; // Recording Object
+			index.meta = path;
+                	index.meta = index.meta.replace(/tmp\//i, 'metadata/');
+                	index.meta = index.meta.replace(/\.tmp/i, '.txt');
+                	index.pcap = path;
+                	index.pcap = index.pcap.replace(/tmp\/rtpengine-meta-/i, 'pcaps/');
+                	index.pcap = index.pcap.replace(/\.tmp/i, '.pcap');
 
-		try { index.cid = path.match(/\/([^\/]+)\/?\.tmp$/)[1].split('-')[2]; } catch(e) { index.cid = false; }
-		var stats = fs.statSync(index.pcap);
-		var datenow = stats.mtime ? new Date(stats.mtime).getTime() : new Date().getTime();
-		index.t_sec = Math.floor( datenow / 1000);
-		index.u_sec = ( datenow - (index.t_sec*1000))*1000;
-		console.log('Meta Hit!', index);
-		cache.set(index.cid, JSON.stringify(index));
+			try { index.cid = path.match(/\/([^\/]+)\/?\.tmp$/)[1].split('-')[2]; } catch(e) { index.cid = false; }
+			var stats = fs.statSync(index.pcap);
+			var datenow = stats.mtime ? new Date(stats.mtime).getTime() : new Date().getTime();
+			index.t_sec = Math.floor( datenow / 1000);
+			index.u_sec = ( datenow - (index.t_sec*1000))*1000;
+			if (config.debug) console.log('Meta Hit!', index);
+			cache.set(index.cid, JSON.stringify(index));
 	   }
     });
 
@@ -77,17 +77,17 @@ app.post('/get/:id', async function (req, res) {
   try {
 	  var apiresponse = {};
 	  var data = req.body;
-	  console.log('NEW API POST REQ', JSON.stringify(data));
+	  if (config.debug) console.log('NEW API POST REQ', JSON.stringify(data));
 	  // API ban relay
 	  if (data.data.sid) {
 	    await Promise.all(data.data.sid.map(async (cid) => {
 	    	var cached = cache.get(cid);
 	    	if (cached) {
-                        console.log('Found Index in Cache',cid,cached);
+                        if (config.debug) console.log('Found Index in Cache',cid,cached);
 			apiresponse[cid] = JSON.parse(cached) || cached;
 		}
 	    }));
-            console.log('API RESPONSE',apiresponse);
+            if (config.debug) console.log('API RESPONSE',apiresponse);
 	    res.send(apiresponse)
 	  } else { res.sendStatus(500); }
   } catch(e) { console.error(e) }
@@ -95,24 +95,37 @@ app.post('/get/:id', async function (req, res) {
 
 
 // TODO: POST ONLY w/ Token
-app.all('/recording/pcaps/:file', async function (req, res) {
-  try {
+if (config.download) {
+  if (config.insecure) {
+    // THIS IS INSECURE - USE FOR TESTING OR AT YOUR OWN RISK!
+    app.all('/recording/pcaps/:file', async function (req, res) {
+    try {
 	var data = req.body;
-	console.log('NEW DOWNLOAD REQ', JSON.stringify(data), req.params.file, req.url);
-	// INSECURE: backend should provide an auth token to proceed in the JSON body
+	if (config.debug) console.log('NEW DOWNLOAD REQ', JSON.stringify(data), req.params.file, req.url);
   	if(req.params.file){
 		var fullPath = req.url || req.params.file;
 		var stats = fs.statSync(fullPath);
-		if (stats) {
-			 res.download(fullPath, req.params.file);
-		}
+		if (stats) { res.download(fullPath, req.params.file); }
+	} else { res.sendStatus(404); }
+    } catch(e) { console.error(e); res.sendStatus(500); }
+    });
+  } else {
+    app.post('/recording/pcaps/:file', async function (req, res) {
+    try {
+	var data = req.body;
+	if (config.debug) console.log('NEW DOWNLOAD REQ', JSON.stringify(data), req.params.file, req.url);
+	// INSECURE: backend should provide an auth token to proceed in the JSON body
+  	if(req.params.file && data.token){
+		// TODO: validate token
+		var fullPath = req.url || req.params.file;
+		var stats = fs.statSync(fullPath);
+		if (stats) { res.download(fullPath, req.params.file); }
+	} else { res.sendStatus(404); }
+    } catch(e) { console.error(e); res.sendStatus(500); }
+    });
 
-	} else {
-		res.sendStatus(404);
-	}
-
-  } catch(e) { console.error(e); res.sendStatus(500); }
-});
+  }
+}
 
 app.listen(port, () => console.log('API Server started',port))
 
