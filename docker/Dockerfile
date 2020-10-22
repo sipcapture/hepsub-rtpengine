@@ -64,7 +64,7 @@ RUN mkdir -p /opt/deb && \
 
 FROM debian:buster
 MAINTAINER "Lorenzo Mangani <lorenzo.mangani@gmail.com>"
-ENV RANDOM 01209184
+ENV RANDOM 01209185
 USER root
 
 RUN apt-get update && apt-get install -y sudo git make bison flex curl libssl-dev && \
@@ -74,8 +74,6 @@ RUN apt-get update && apt-get install -y sudo git make bison flex curl libssl-de
                        libncurses5 libncurses5-dev default-libmysqlclient-dev expect && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-
-RUN curl ipinfo.io/ip > /etc/public_ip.txt
 
 RUN git clone https://github.com/OpenSIPS/opensips.git -b 2.2 ~/opensips_2_2 && \
     sed -i 's/db_http db_mysql db_oracle/db_http db_oracle/g' ~/opensips_2_2/Makefile.conf.template && \

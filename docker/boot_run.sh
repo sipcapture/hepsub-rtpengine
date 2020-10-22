@@ -1,6 +1,8 @@
 #!/bin/bash
 # OpenSIPS Docker bootstrap
 
+curl ipinfo.io/ip > /etc/public_ip.txt
+
 MYSQL_PWD=${MYSQL_PWD:-"passwd"}
 EXTERNAL_IP=$(cat /etc/public_ip.txt)
 ADVERTISED_IP=${ADVERTISED_IP:-$EXTERNAL_IP}
