@@ -37,7 +37,6 @@ rtpengine -p /var/run/rtpengine.pid --interface=$HOST_IP!$ADVERTISED_IP -n 127.0
   --table=0
 #  --recording-method=proc \
 
-
 # Starting OpenSIPS process
 /usr/local/sbin/opensips -c
 /usr/local/sbin/opensipsctl start
@@ -47,15 +46,13 @@ HOMER_PORT="${HOMER_PORT:-80}"
 PUBLIC_IP="${PUBLIC_IP:-127.0.0.1}"
 HOMER_TOKEN="${HOMER_TOKEN:-XLzeFGVTeKKnkWszHgLDkhlYoEYdLKUyMpvHUcoIPBNjzFyLOlXhmWmljmXxcNiJbEKknptGFdNhQTIa}"
 
+echo "Starting HEPSUB Client"
+cd /app
+git pull
+
 sed -i "s/HOMER_IP_HERE/$HOMER_IP/g" /app/config.js
 sed -i "s/HOMER_PORT_HERE/$HOMER_PORT/g" /app/config.js
 sed -i "s/LOCAL_IP_HERE/$PUBLIC_IP/g" /app/config.js
 sed -i "s/HOMER_TOKEN_HERE/$HOMER_TOKEN/g" /app/config.js
 
-echo "Starting HEPSUB Client"
-cd /app
-git pull
 npm start
-#npm start >> /var/log/syslog &
-#
-#rsyslogd -n
