@@ -98,12 +98,13 @@ app.post('/get/:id', async function (req, res) {
 app.all('/recording/pcaps/:file', async function (req, res) {
   try {
 	var data = req.body;
-	console.log('NEW DOWNLOAD REQ', JSON.stringify(data), req.params.file);
+	console.log('NEW DOWNLOAD REQ', JSON.stringify(data), req.params.file, req.url);
 	// INSECURE: backend should provide an auth token to proceed in the JSON body
   	if(req.params.file){
-		var stats = fs.statSync(req.params.file);
+		var fullPath = req.url || req.params.file;
+		var stats = fs.statSync(fullPath);
 		if (stats) {
-			 res.download(req.params.file, req.params.file);
+			 res.download(fullPath, req.params.file);
 		}
 
 	} else {
