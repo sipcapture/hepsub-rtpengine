@@ -54,6 +54,7 @@ sed -i "s/HOMER_TOKEN_HERE/$HOMER_TOKEN/g" /app/config.js
 
 echo "Starting HEPSUB Client"
 cd /app
+git pull
 npm start
 #npm start >> /var/log/syslog &
 #

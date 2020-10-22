@@ -32,14 +32,20 @@ watcher
     .on('add', function(path) {console.log('File', path, 'has been added');  })
     // .on('change', function(path) {console.log('File', path, 'has been changed'); })
     .on('unlink', function(path) {console.log('File', path, 'has been removed. Indexing!');
-	   if(path.endsWith('.meta')){
+	   if(path.includes('rtpengine-meta')){
                 var index = {}; // Recording Object
-		index.wav = path.replace(/\.meta/i, '-mix.wav');
-		try { index.cid = path.match(/\/([^\/]+)\/?\.meta$/)[1].split('-')[0]; } catch(e) { console.log(e); }
-		var stats = fs.statSync(index.wav);
+		index.meta = path;
+                index.meta = index.meta.replace(/tmp\//i, 'metadata/');
+                index.meta = index.meta.replace(/\.tmp/i, '.txt');
+                index.pcap = path;
+                index.pcap = index.pcap.replace(/tmp\/rtpengine-meta-/i, 'pcaps/');
+                index.pcap = index.pcap.replace(/\.tmp/i, '.pcap');
+
+		try { index.cid = path.match(/\/([^\/]+)\/?\.tmp$/)[1].split('-')[2]; } catch(e) { index.cid = false; }
+		var stats = fs.statSync(index.pcap);
 		var datenow = stats.mtime ? new Date(stats.mtime).getTime() : new Date().getTime();
 		index.t_sec = Math.floor( datenow / 1000);
-		index.u_sec = ( datenow - (t_sec*1000))*1000;
+		index.u_sec = ( datenow - (index.t_sec*1000))*1000;
 		console.log('Meta Hit!', index);
 		cache.set(index.cid, JSON.stringify(index));
 	   }
