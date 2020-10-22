@@ -31,7 +31,7 @@ watcher
     .on('error', function(error) {console.error('Error happened', error);})
     .on('add', function(path) {
 		console.log('File', path, 'has been added');
-		if (path.endsWith('.pcap'){
+		if (path.endsWith('.pcap')){
 			var index = {};
 			index.pcap = path;
 			index.cid = { cid = path.match(/\/([^\/]+)\/?\.pcap$/)[1].split('-')[0]; } catch(e) { console.log(e); }
