@@ -29,7 +29,20 @@ const requestPromise = util.promisify(request);
 const watcher = chokidar.watch('/recording', {ignored: /^\./, persistent: true });
 watcher
     .on('error', function(error) {console.error('Error happened', error);})
-    .on('add', function(path) {console.log('File', path, 'has been added');  })
+    .on('add', function(path) {
+		console.log('File', path, 'has been added');
+		if (path.endsWith('.pcap'){
+			var index = {};
+			index.pcap = path;
+			index.cid = { cid = path.match(/\/([^\/]+)\/?\.pcap$/)[1].split('-')[0]; } catch(e) { console.log(e); }
+			var stats = fs.statSync(index.pcap);
+			var datenow = stats.mtime ? new Date(stats.mtime).getTime() : new Date().getTime();
+			index.t_sec = Math.floor( datenow / 1000);
+			index.u_sec = ( datenow - (index.t_sec*1000))*1000;
+			console.log('PCAP Hit!', index);
+			cache.set(index.cid, JSON.stringify(index));
+		}
+    })
     // .on('change', function(path) {console.log('File', path, 'has been changed'); })
     .on('unlink', function(path) {console.log('File', path, 'has been removed. Indexing!');
 	   if(path.includes('rtpengine-meta')){
