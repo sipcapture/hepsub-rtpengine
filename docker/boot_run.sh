@@ -24,20 +24,17 @@ sed -i "s/advertised_address=.*/advertised_address=\"${ADVERTISED_IP}\"/g" /usr/
 sed -i "s/listen=udp.*/listen=udp:${HOST_IP}:${ADVERTISED_PORT}/g" /usr/local/etc/opensips/opensips.cfg
 sed -i "s/listen=ws.*/listen=ws:${HOST_IP}:${WSS_PORT}/g" /usr/local/etc/opensips/opensips.cfg
 
-# Prepare RTPEngine modules
-ln -s /lib/modules/$(uname -r) /lib/modules/4.19.0-12-amd64
-mkdir -p /lib/modules/$(uname -r)/updates
-dpkg -i /rtpengine/ngcp-rtpengine-kernel*.deb
-dpkg -i /rtpengine/ngcp-rtpengine-iptables*.deb
-
 mkdir /recording
 # Starting RTPEngine process
 echo 'del 0' > /proc/rtpengine/control || true
 rtpengine-recording --config-file=/etc/rtpengine/rtpengine-recording.conf
 rtpengine -p /var/run/rtpengine.pid --interface=$HOST_IP!$ADVERTISED_IP -n 127.0.0.1:60000 -c 127.0.0.1:60001 -m $ADVERTISED_RANGE_FIRST -M $ADVERTISED_RANGE_LAST -E -L 7 \
-  --recording-method=proc \
+  --recording-format=eth \
+  --recording-method=pcap \
   --recording-dir=/recording \
   --table=0
+#  --recording-method=proc \
+
 
 # Starting OpenSIPS process
 /usr/local/sbin/opensips -c
