@@ -43,6 +43,8 @@ watcher
 			index.u_sec = ( datenow - (index.t_sec*1000))*1000;
 			if (debug) console.log('PCAP Hit!', index);
 			cache.set(index.cid, JSON.stringify(index));
+		} else {
+			if (debug) console.log('unmatched type/path', path);
 		}
     })
     // .on('change', function(path) {console.log('File', path, 'has been changed'); })
@@ -91,7 +93,7 @@ app.post('/get/:id', async function (req, res) {
 	    }));
             if (debug) console.log('API RESPONSE',apiresponse);
 	    apiresponse.token = uuidv1();
-	    token.set(apiresponse.token, cid);
+	    tokens.set(apiresponse.token, cid);
 	    res.send(apiresponse)
 	  } else { res.sendStatus(500); }
   } catch(e) { console.error(e) }
