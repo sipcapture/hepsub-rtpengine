@@ -10,6 +10,7 @@ try {
 
 var LRU = require('lru');
 var cache = new LRU({ max: 1000 });
+var tokens = new LRU({ max: 100, maxAge: 30000 });
 
 const chokidar = require('chokidar');
 const fs = require('fs');
@@ -88,13 +89,15 @@ app.post('/get/:id', async function (req, res) {
 		}
 	    }));
             if (config.debug) console.log('API RESPONSE',apiresponse);
+	    apiresponse.token = uuidv1();
+	    token.set(apiresponse.token, cid);
 	    res.send(apiresponse)
 	  } else { res.sendStatus(500); }
   } catch(e) { console.error(e) }
 })
 
 
-// TODO: POST ONLY w/ Token
+// DOWNLOAD API
 if (config.download) {
   if (config.insecure) {
     // THIS IS INSECURE - USE FOR TESTING OR AT YOUR OWN RISK!
@@ -110,13 +113,16 @@ if (config.download) {
     } catch(e) { console.error(e); res.sendStatus(500); }
     });
   } else {
+    // THIS IS LESS INSECURE = REQUIRES BACK A TEMPORARY TOKEN PROVIDED WITH THE ORIGINAL API RESPONSE
     app.post('/recording/pcaps/:file', async function (req, res) {
     try {
 	var data = req.body;
 	if (config.debug) console.log('NEW DOWNLOAD REQ', JSON.stringify(data), req.params.file, req.url);
 	// INSECURE: backend should provide an auth token to proceed in the JSON body
   	if(req.params.file && data.token){
-		// TODO: validate token
+		// validate ephemeral token
+		var token = tokens.get(data.token);
+		if (!token) { res.sendStatus(401); return; }
 		var fullPath = req.url || req.params.file;
 		var stats = fs.statSync(fullPath);
 		if (stats) { res.download(fullPath, req.params.file); }
