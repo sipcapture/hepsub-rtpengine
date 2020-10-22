@@ -61,7 +61,7 @@ app.post('/get/:id', async function (req, res) {
 	  console.log('NEW API POST REQ', JSON.stringify(data));
 	  // API ban relay
 	  if (data.data.sid) {
-	    await Promise.all(data.data.sid, async (cid) => {
+	    await Promise.all(data.data.sid.map(async (cid) => {
 	    	var cached = cache.get(cid);
 	    	if (cached) {
                         console.log('Found Index in Cache',cid,cached);
