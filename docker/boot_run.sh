@@ -19,28 +19,17 @@ echo -e "Advertised RTP Range : ${ADVERTISED_RANGE_FIRST}-${ADVERTISED_RANGE_LAS
 # Starting MySQL
 service mysql start
 
-# Auto Create Database
-expect -c "
-spawn /usr/local/sbin/opensipsdbctl create \"\"
-expect \"MySQL password for root: \"
-send \"${MYSQL_PWD}\r\"
-expect \"Install presence related tables? (y/n):\"
-send \"y\r\"
-expect \"Install tables for imc cpl siptrace domainpolicy carrierroute userblacklist b2b cachedb_sql registrant call_center fraud_detection emergency? (y/n)\"
-send \"y\r\"
-expect \"END\"
-"
-
 # Configure opensips.cfg
 sed -i "s/advertised_address=.*/advertised_address=\"${ADVERTISED_IP}\"/g" /usr/local/etc/opensips/opensips.cfg
 sed -i "s/listen=udp.*/listen=udp:${HOST_IP}:${ADVERTISED_PORT}/g" /usr/local/etc/opensips/opensips.cfg
 sed -i "s/listen=ws.*/listen=ws:${HOST_IP}:${WSS_PORT}/g" /usr/local/etc/opensips/opensips.cfg
 
 # Prepare RTPEngine modules
+ln -s /lib/modules/$(uname -r) /lib/modules/4.19.0-12-amd64
 mkdir -p /lib/modules/$(uname -r)/updates
-cp -u /rtpengine/xt_RTPENGINE.ko "/lib/modules/$(uname -r)/updates/xt_RTPENGINE.ko"
-depmod -a
-modprobe xt_RTPENGINE
+dpkg -i /rtpengine/ngcp-rtpengine-kernel*.deb
+dpkg -i /rtpengine/ngcp-rtpengine-iptables*.deb
+
 mkdir /recording
 # Starting RTPEngine process
 echo 'del 0' > /proc/rtpengine/control || true

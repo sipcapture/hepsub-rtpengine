@@ -64,9 +64,11 @@ app.post('/get/:id', async function (req, res) {
 	    await Promise.all(data.data.sid(async (cid) => {
 	    	var cached = cache.get(cid);
 	    	if (cached) {
-			apiresponse[cid] = JSON.parse(cached);
+                        console.log('Found Index in Cache',cid,cached);
+			apiresponse[cid] = JSON.parse(cached) || cached;
 		}
 	    }));
+            console.log('API RESPONSE',apiresponse);
 	    res.send(apiresponse)
 	  } else { res.sendStatus(500); }
   } catch(e) { console.error(e) }

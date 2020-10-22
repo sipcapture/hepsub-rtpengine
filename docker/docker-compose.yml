@@ -4,6 +4,7 @@ services:
     image: qxip/opensips-rtpengine-rec
     privileged: true
     restart: always
+    privileged: true
     environment:
       - ADVERTISED_RANGE_FIRST=20000
       - ADVERTISED_RANGE_LAST=20100
@@ -13,7 +14,7 @@ services:
       - HOMER_TOKEN=${HOMER_TOKEN:-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX}
     volumes:
        - /var/lib/mysql
-       - /recording
+       - ./recording:/recording
     ports:
       - "9060:9060/udp"
       - "5060:5060/udp"
