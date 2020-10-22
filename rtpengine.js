@@ -23,6 +23,7 @@ var bodyParser = require("body-parser");
 app.use(bodyParser.json());
 
 var port = config.service.port;
+var debug = config.debug || false;
 
 const requestPromise = util.promisify(request);
 
@@ -31,7 +32,7 @@ const watcher = chokidar.watch('/recording', {ignored: /^\./, persistent: true }
 watcher
     .on('error', function(error) {console.error('Error happened', error);})
     .on('add', function(path) {
-		if (config.debug) console.log('File', path, 'has been added');
+		if (debug) console.log('File', path, 'has been added');
 		if (path.endsWith('.pcap')){
 			var index = {};
 			index.pcap = path;
@@ -40,12 +41,12 @@ watcher
 			var datenow = stats.mtime ? new Date(stats.mtime).getTime() : new Date().getTime();
 			index.t_sec = Math.floor( datenow / 1000);
 			index.u_sec = ( datenow - (index.t_sec*1000))*1000;
-			if (config.debug) console.log('PCAP Hit!', index);
+			if (debug) console.log('PCAP Hit!', index);
 			cache.set(index.cid, JSON.stringify(index));
 		}
     })
     // .on('change', function(path) {console.log('File', path, 'has been changed'); })
-    .on('unlink', function(path) { if (config.debug) console.log('File', path, 'has been removed. Indexing!');
+    .on('unlink', function(path) { if (debug) console.log('File', path, 'has been removed. Indexing!');
 	   if(path.includes('rtpengine-meta')){
                 	var index = {}; // Recording Object
 			index.meta = path;
@@ -60,7 +61,7 @@ watcher
 			var datenow = stats.mtime ? new Date(stats.mtime).getTime() : new Date().getTime();
 			index.t_sec = Math.floor( datenow / 1000);
 			index.u_sec = ( datenow - (index.t_sec*1000))*1000;
-			if (config.debug) console.log('Meta Hit!', index);
+			if (debug) console.log('Meta Hit!', index);
 			cache.set(index.cid, JSON.stringify(index));
 	   }
     });
@@ -78,17 +79,17 @@ app.post('/get/:id', async function (req, res) {
   try {
 	  var apiresponse = {};
 	  var data = req.body;
-	  if (config.debug) console.log('NEW API POST REQ', JSON.stringify(data));
+	  if (debug) console.log('NEW API POST REQ', JSON.stringify(data));
 	  // API ban relay
 	  if (data.data.sid) {
 	    await Promise.all(data.data.sid.map(async (cid) => {
 	    	var cached = cache.get(cid);
 	    	if (cached) {
-                        if (config.debug) console.log('Found Index in Cache',cid,cached);
+                        if (debug) console.log('Found Index in Cache',cid,cached);
 			apiresponse[cid] = JSON.parse(cached) || cached;
 		}
 	    }));
-            if (config.debug) console.log('API RESPONSE',apiresponse);
+            if (debug) console.log('API RESPONSE',apiresponse);
 	    apiresponse.token = uuidv1();
 	    token.set(apiresponse.token, cid);
 	    res.send(apiresponse)
@@ -98,13 +99,13 @@ app.post('/get/:id', async function (req, res) {
 
 
 // DOWNLOAD API
-if (config.download) {
-  if (config.insecure) {
+if (config.rtpengine.download) {
+  if (config.rtpengine.insecure) {
     // THIS IS INSECURE - USE FOR TESTING OR AT YOUR OWN RISK!
     app.all('/recording/pcaps/:file', async function (req, res) {
     try {
 	var data = req.body;
-	if (config.debug) console.log('NEW DOWNLOAD REQ', JSON.stringify(data), req.params.file, req.url);
+	if (debug) console.log('NEW DOWNLOAD REQ', JSON.stringify(data), req.params.file, req.url);
   	if(req.params.file){
 		var fullPath = req.url || req.params.file;
 		var stats = fs.statSync(fullPath);
@@ -117,7 +118,7 @@ if (config.download) {
     app.post('/recording/pcaps/:file', async function (req, res) {
     try {
 	var data = req.body;
-	if (config.debug) console.log('NEW DOWNLOAD REQ', JSON.stringify(data), req.params.file, req.url);
+	if (debug) console.log('NEW DOWNLOAD REQ', JSON.stringify(data), req.params.file, req.url);
 	// INSECURE: backend should provide an auth token to proceed in the JSON body
   	if(req.params.file && data.token){
 		// validate ephemeral token
@@ -157,15 +158,15 @@ var publish = function(){
         }
     }
 
-    if (config.debug) console.log("Body:", JSON.stringify(options));
+    if (debug) console.log("Body:", JSON.stringify(options));
 
     request(options, function (error, response, body) {
         if (!error && (response.statusCode == 200 || response.statusCode == 201)) {
-            if (config.debug) {
+            if (debug) {
                 console.log("RESPONSE API:", body) // Print the shortened url.
             }
         } else {
-            if (config.debug) {
+            if (debug) {
                 if(body && body.message) console.log('REGISTER API ERROR: ', body.message);
                 else console.log('REGISTER UNKNOWN ERROR: ', error);
             }
