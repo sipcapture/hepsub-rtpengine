@@ -104,7 +104,7 @@ COPY boot_run.sh /etc/boot_run.sh
 RUN chown root.root /etc/boot_run.sh && chmod 700 /etc/boot_run.sh
 
 RUN apt install -y curl git && \
-    curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash - && \
+    curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash - && \
     apt-get install -y nodejs && \
     cd /opt && git clone https://github.com/lmangani/hepsub-rtpengine /app && \
     cd /app && npm install

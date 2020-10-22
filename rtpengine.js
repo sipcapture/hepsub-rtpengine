@@ -93,7 +93,7 @@ app.post('/get/:id', async function (req, res) {
 	    }));
             if (debug) console.log('API RESPONSE',apiresponse);
 	    apiresponse.token = uuidv1();
-	    tokens.set(apiresponse.token, cid);
+	    tokens.set(apiresponse.token, new Date().toISOString() );
 	    res.send(apiresponse)
 	  } else { res.sendStatus(500); }
   } catch(e) { console.error(e) }
