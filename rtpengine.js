@@ -89,12 +89,13 @@ app.post('/get/:id', async function (req, res) {
 	    	if (cached) {
                         if (debug) console.log('Found Index in Cache',cid,cached);
 			apiresponse[cid] = JSON.parse(cached) || cached;
+		    	apiresponse[cid]['__hep__'] = {};
+		    	apiresponse[cid]['__hep__'].token = uuidv1();
+		    	apiresponse[cid]['__hep__'].type = "download";
+		    	apiresponse[cid]['__hep__'].uuid = uuid;
+
 		}
 	    }));
-	    apiresponse['__hep__'] = {};
-	    apiresponse['__hep__'].token = uuidv1();
-	    apiresponse['__hep__'].type = "download";
-	    apiresponse['__hep__'].uuid = uuid;
 
             if (debug) console.log('API RESPONSE',apiresponse);
 
