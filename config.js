@@ -12,7 +12,7 @@ var config = {
 	"port": 18088,
 	"protocol": "http",
 	"path": "/get",
-	"type": "wav",
+	"type": "pcap;download",
 	"ttl": 300,
 	"node": "rtpengine",
 	"gid": 10
