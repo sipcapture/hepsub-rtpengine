@@ -91,11 +91,12 @@ app.post('/get/:id', async function (req, res) {
 			apiresponse[cid] = JSON.parse(cached) || cached;
 		}
 	    }));
-            if (debug) console.log('API RESPONSE',apiresponse);
 	    apiresponse['__hep__'] = {};
 	    apiresponse['__hep__'].token = uuidv1();
-	    apiresponse['__hep__'].type = "download";		
+	    apiresponse['__hep__'].type = "download";
 	    apiresponse['__hep__'].uuid = uuid;
+
+            if (debug) console.log('API RESPONSE',apiresponse);
 
 	    tokens.set(apiresponse.token, new Date().toISOString() );
 	    res.send(apiresponse)
