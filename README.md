@@ -43,7 +43,7 @@ Add the following profile to your `HEPsub` configuration
 }
 ```
 
-![image](https://user-images.githubusercontent.com/1423657/97006606-674b2400-1540-11eb-8593-9f86dfe53947.png)
+<img src="https://user-images.githubusercontent.com/1423657/97006606-674b2400-1540-11eb-8593-9f86dfe53947.png" width=500 />
 
 
 ##### Initialize
