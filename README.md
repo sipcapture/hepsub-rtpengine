@@ -13,6 +13,9 @@ The **HEPSUB RTP:Engine** client will receive on-demand request from HOMER sessi
 
 ![image](https://user-images.githubusercontent.com/1423657/96891936-6dca9480-1489-11eb-8156-8f85bbfe0eb3.png)
 
+## Status
+
+* Beta Testing! APIs might change. Open an Issue if you'd like to join in.
 
 
 ##### Install
