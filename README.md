@@ -22,6 +22,30 @@ npm install
 ##### Configure
 Configure your HOMER URL, `API Token` and local network settings in file `config.js`
 
+
+###### HOMER HEPsub
+Add the following profile to your `HEPsub` configuration
+```
+{
+    "lookup_id": 0,
+    "lookup_type": "pubsub",
+    "lookup_field": "{\"data\":$source_field,\"fromts\":$fromts,\"tots\":$tots}",
+    "lookup_range": [
+        -300,
+        200
+    ],
+    "source_fields": {
+        "sid": "data_header.sid",
+        "callid": "data_header.callid",
+        "source_ip": "data_header.srcIp"
+    },
+    "lookup_profile": "pcap"
+}
+```
+
+<img src="https://user-images.githubusercontent.com/1423657/97006606-674b2400-1540-11eb-8593-9f86dfe53947.png" width=800 />
+
+
 ##### Initialize
 ```
 npm start
