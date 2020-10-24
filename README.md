@@ -3,7 +3,7 @@
 # HEPSUB RTP:Engine 
 ### Call Recording Endpoint
 
-[HOMER](https://github.com/sipcapture/homer-app) Seven allows external agents to subscribe capabilities to provide *"on-demand"* session details from external APIs, databases, etc. to argument internally available data without requiring data duplication and allowing creative use of the core HEP platform.
+[HOMER](https://github.com/sipcapture/homer-app) Seven allows external agents to subscribe capabilities to provide *"on-demand"* session details from external APIs, databases, etc. to augment internally available data without requiring data duplication and allowing creative use of the core HEP platform.
 
 The **HEPSUB RTP:Engine** client will receive on-demand request from HOMER sessions, and will return any local metadata and PCAP recordings.
 
@@ -13,6 +13,9 @@ The **HEPSUB RTP:Engine** client will receive on-demand request from HOMER sessi
 
 ![image](https://user-images.githubusercontent.com/1423657/96891936-6dca9480-1489-11eb-8156-8f85bbfe0eb3.png)
 
+## Status
+
+* Beta Testing! APIs might change. Open an Issue if you'd like to join in.
 
 
 ##### Install
