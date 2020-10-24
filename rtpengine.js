@@ -97,7 +97,7 @@ var processDownload = function(req,res){
 app.post('/get/:id', async function (req, res) {
   try {
 	  // Download Request
-	  if (req.params.file == "download"){
+	  if (req.params.id == "download"){
 		processDownload(req,res);
 		return;
 	  }
@@ -105,7 +105,7 @@ app.post('/get/:id', async function (req, res) {
 	  var apiresponse = {};
 	  var data = req.body;
 	  if (debug) console.log('NEW API POST REQ', JSON.stringify(data));
-	  if (data.data.sid) {
+	  if (data.data && data.data.sid) {
 	    await Promise.all(data.data.sid.map(async (cid) => {
 	    	var cached = cache.get(cid);
 	    	if (cached) {
