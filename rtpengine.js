@@ -10,7 +10,7 @@ try {
 
 var LRU = require('lru');
 var cache = new LRU({ max: 1000 });
-var tokens = new LRU({ max: 100, maxAge: 30000 });
+var tokens = new LRU({ max: 100, maxAge: 300000 });
 
 const chokidar = require('chokidar');
 const fs = require('fs');
