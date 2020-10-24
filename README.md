@@ -11,7 +11,7 @@ The **HEPSUB RTP:Engine** client will receive on-demand request from HOMER sessi
 [ HOMER ] <---> [ HEPSUB-RTPENGINE ] <---> [ RTPENGINE META/PCAP ]
 ```
 
-![image](https://user-images.githubusercontent.com/1423657/96891936-6dca9480-1489-11eb-8156-8f85bbfe0eb3.png)
+![image](https://user-images.githubusercontent.com/1423657/97088019-6690bb80-162e-11eb-9447-f9d724f427b2.png)
 
 ## Status
 
