@@ -1,6 +1,6 @@
 {
   "name": "hepsub-rtpengine",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "HEPSUB-RTPEngine integration",
   "main": "rtpengine.js",
   "scripts": {

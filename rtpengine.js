@@ -9,7 +9,9 @@ try {
 } catch(e) { console.log('Missing config!',e); process.exit(1); }
 
 var LRU = require('lru');
-var cache = new LRU({ max: 1000 });
+// PCAP CACHE: MAX NUMBER OF PCAP LINKS
+var cache = new LRU({ max: 10000 });
+// TOKEN CACHE: SET EXPIRATION FOR DOWNLOAD LINKS
 var tokens = new LRU({ max: 100, maxAge: 300000 });
 
 const chokidar = require('chokidar');
@@ -27,7 +29,7 @@ var debug = config.debug || false;
 
 const requestPromise = util.promisify(request);
 
-// INDEXING Bakend for RTPEngine Meta files
+// INDEXING Backend for RTPEngine Meta files
 const watcher = chokidar.watch('/recording', {ignored: /^\./, persistent: true });
 watcher
     .on('error', function(error) {console.error('Error happened', error);})
@@ -68,7 +70,6 @@ watcher
 	   }
     });
 
-
 // API SETTINGS
 app.all('*', function(req, res, next) {
    res.header("Access-Control-Allow-Origin", "*");
@@ -81,7 +82,7 @@ var processDownload = function(req,res){
     try {
 	var data = req.body;
 	if (debug) console.log('NEW DOWNLOAD REQ', JSON.stringify(data), req.params.file, req.url);
-	// INSECURE: backend should provide an auth token to proceed in the JSON body
+	// SECURE: backend should provide a valid token to proceed
   	if(data.__hep__ && data.__hep__.token && data.pcap){
 		// validate ephemeral token
 		var token = tokens.get(data.__hep__.token);
@@ -98,6 +99,7 @@ app.post('/get/:id', async function (req, res) {
   try {
 	  // Download Request
 	  if (req.params.id == "download"){
+		if (!config.rtpengine.download){ res.sendStatus(500); return; }
 		processDownload(req,res);
 		return;
 	  }
@@ -120,51 +122,13 @@ app.post('/get/:id', async function (req, res) {
 	    }));
 
             if (debug) console.log('API RESPONSE',apiresponse);
-
 	    res.send(apiresponse)
+
 	  } else { res.sendStatus(500); }
   } catch(e) { console.error(e) }
 })
 
-
-// DOWNLOAD API
-if (config.rtpengine.download) {
-  if (config.rtpengine.insecure) {
-    // THIS IS INSECURE - USE FOR TESTING OR AT YOUR OWN RISK!
-    app.all('/recording/pcaps/:file', async function (req, res) {
-    try {
-	var data = req.body;
-	if (debug) console.log('NEW DOWNLOAD REQ', JSON.stringify(data), req.params.file, req.url);
-  	if(req.params.file){
-		var fullPath = req.url || req.params.file;
-		var stats = fs.statSync(fullPath);
-		if (stats) { res.download(fullPath, req.params.file); }
-	} else { res.sendStatus(404); }
-    } catch(e) { console.error(e); res.sendStatus(500); }
-    });
-  } else {
-    // THIS IS LESS INSECURE = REQUIRES BACK A TEMPORARY TOKEN PROVIDED WITH THE ORIGINAL API RESPONSE
-    app.post('/recording/pcaps/:file', async function (req, res) {
-    try {
-	var data = req.body;
-	if (debug) console.log('NEW DOWNLOAD REQ', JSON.stringify(data), req.params.file, req.url);
-	// INSECURE: backend should provide an auth token to proceed in the JSON body
-  	if(req.params.file && data.token){
-		// validate ephemeral token
-		var token = tokens.get(data.token);
-		if (!token) { res.sendStatus(401); return; }
-		var fullPath = req.url || req.params.file;
-		var stats = fs.statSync(fullPath);
-		if (stats) { res.download(fullPath, req.params.file); }
-	} else { res.sendStatus(404); }
-    } catch(e) { console.error(e); res.sendStatus(500); }
-    });
-
-  }
-}
-
 app.listen(port, () => console.log('API Server started',port))
-
 
 // HEP PUBSUB Hooks
 var api = config.backend;
