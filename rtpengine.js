@@ -76,13 +76,35 @@ app.all('*', function(req, res, next) {
    next();
 });
 
+
+var processDownload = function(req,res){
+    try {
+	var data = req.body;
+	if (debug) console.log('NEW DOWNLOAD REQ', JSON.stringify(data), req.params.file, req.url);
+	// INSECURE: backend should provide an auth token to proceed in the JSON body
+  	if(data.__hep__ && data.__hep__.token && data.pcap){
+		// validate ephemeral token
+		var token = tokens.get(data.__hep__.token);
+		if (!token) { res.sendStatus(401); return; }
+		var fullPath = data.pcap;
+		var stats = fs.statSync(fullPath);
+		if (stats) { res.download(fullPath, req.params.file); }
+	} else { res.sendStatus(404); }
+    } catch(e) { console.error(e); res.sendStatus(500); }
+}
+
 // HEP Post Paths
 app.post('/get/:id', async function (req, res) {
   try {
+	  // Download Request
+	  if (req.params.file == "download"){
+		processDownload(req,res);
+		return;
+	  }
+	  // HEPsub request
 	  var apiresponse = {};
 	  var data = req.body;
 	  if (debug) console.log('NEW API POST REQ', JSON.stringify(data));
-	  // API ban relay
 	  if (data.data.sid) {
 	    await Promise.all(data.data.sid.map(async (cid) => {
 	    	var cached = cache.get(cid);
