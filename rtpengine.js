@@ -115,13 +115,12 @@ app.post('/get/:id', async function (req, res) {
 		    	apiresponse[cid]['__hep__'].token = uuidv1();
 		    	apiresponse[cid]['__hep__'].type = "download";
 		    	apiresponse[cid]['__hep__'].uuid = uuid;
-
+		        tokens.set(apiresponse[cid]['__hep__'].token, new Date().toISOString() );
 		}
 	    }));
 
             if (debug) console.log('API RESPONSE',apiresponse);
 
-	    tokens.set(apiresponse.token, new Date().toISOString() );
 	    res.send(apiresponse)
 	  } else { res.sendStatus(500); }
   } catch(e) { console.error(e) }
