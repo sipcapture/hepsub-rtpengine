@@ -30,7 +30,7 @@ var debug = config.debug || false;
 const requestPromise = util.promisify(request);
 
 // INDEXING Backend for RTPEngine Meta files
-const watcher = chokidar.watch('/recording', {ignored: /^\./, persistent: true });
+const watcher = chokidar.watch(config.rtpengine.path || '/recording', {ignored: /^\./, persistent: true });
 watcher
     .on('error', function(error) {console.error('Error happened', error);})
     .on('add', function(path) {
