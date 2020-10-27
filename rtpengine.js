@@ -64,7 +64,7 @@ watcher
                 	index.pcap = index.pcap.replace(/tmp\/rtpengine-meta-/i, 'pcaps/');
                 	index.pcap = index.pcap.replace(/\.tmp/i, '.pcap');
 			try {
-				index.cid = path.match(/\/([^\/]+)\/?\.pcap$/)[1];
+				index.cid = index.pcap.match(/\/([^\/]+)\/?\.pcap$/)[1];
 				var lastIndex = index.cid.lastIndexOf('-');
 				index.cid = decodeURIComponent(index.cid.substring(0,lastIndex));
 			} catch(e) { index.cid = false; console.log(e); }
