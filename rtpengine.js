@@ -38,7 +38,11 @@ watcher
 		if (path.endsWith('.pcap')){
 			var index = {};
 			index.pcap = path;
-			try { index.cid = path.match(/\/([^\/]+)\/?\.pcap$/)[1].split('-')[0]; } catch(e) { console.log(e); }
+			try {
+				index.cid = path.match(/\/([^\/]+)\/?\.pcap$/)[1];
+				var lastIndex = index.cid.lastIndexOf('-');
+				index.cid = index.cid.substring(0,lastIndex);
+			} catch(e) { console.log(e); }
 			var stats = fs.statSync(index.pcap);
 			var datenow = stats.mtime ? new Date(stats.mtime).getTime() : new Date().getTime();
 			index.t_sec = Math.floor( datenow / 1000);
@@ -59,8 +63,12 @@ watcher
                 	index.pcap = path;
                 	index.pcap = index.pcap.replace(/tmp\/rtpengine-meta-/i, 'pcaps/');
                 	index.pcap = index.pcap.replace(/\.tmp/i, '.pcap');
+			try {
+				index.cid = path.match(/\/([^\/]+)\/?\.pcap$/)[1];
+				var lastIndex = index.cid.lastIndexOf('-');
+				index.cid = index.cid.substring(0,lastIndex);
+			} catch(e) { index.cid = false; console.log(e); }
 
-			try { index.cid = path.match(/\/([^\/]+)\/?\.tmp$/)[1].split('-')[2]; } catch(e) { index.cid = false; }
 			var stats = fs.statSync(index.pcap);
 			var datenow = stats.mtime ? new Date(stats.mtime).getTime() : new Date().getTime();
 			index.t_sec = Math.floor( datenow / 1000);
