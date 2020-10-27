@@ -41,7 +41,7 @@ watcher
 			try {
 				index.cid = path.match(/\/([^\/]+)\/?\.pcap$/)[1];
 				var lastIndex = index.cid.lastIndexOf('-');
-				index.cid = index.cid.substring(0,lastIndex);
+				index.cid = decodeURIComponent(index.cid.substring(0,lastIndex));
 			} catch(e) { console.log(e); }
 			var stats = fs.statSync(index.pcap);
 			var datenow = stats.mtime ? new Date(stats.mtime).getTime() : new Date().getTime();
@@ -66,7 +66,7 @@ watcher
 			try {
 				index.cid = path.match(/\/([^\/]+)\/?\.pcap$/)[1];
 				var lastIndex = index.cid.lastIndexOf('-');
-				index.cid = index.cid.substring(0,lastIndex);
+				index.cid = decodeURIComponent(index.cid.substring(0,lastIndex));
 			} catch(e) { index.cid = false; console.log(e); }
 
 			var stats = fs.statSync(index.pcap);
