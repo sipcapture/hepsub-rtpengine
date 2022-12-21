@@ -10,7 +10,7 @@ try {
         debug: debug,
         rtpengine: {
             download: configDownloadEnabled,
-            path: pathRecording,
+            path: configPathRecording,
         },
         service: settings,
         token: homerAuthToken
@@ -43,7 +43,7 @@ let agentUUID = uuidV1();
 const ttl = settings.ttl;
 
 // INDEXING Backend for RTPEngine Meta files
-const watcher = chokidar.watch(pathRecording, {ignored: /^\./, persistent: true});
+const watcher = chokidar.watch(configPathRecording, {ignored: /^\./, persistent: true});
 watcher
     .on('error', function (error) {
         console.error('directory watcher error:', error);
