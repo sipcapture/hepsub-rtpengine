@@ -30,8 +30,16 @@ const chokidar = require('chokidar');
 const fs = require('fs');
 
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const app = express();
 app.use(express.json());
+
+const getApiRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+});
 
 const port = settings.port;
 const debugActive = debug || false;
@@ -133,7 +141,7 @@ const processDownload = function (req, res) {
 }
 
 // API metadata & PCAP retrieval - Homer will call this with a call ID
-app.post('/get/:action', async function (req, res) {
+app.post('/get/:action', getApiRateLimiter, async function (req, res) {
     // Example request:
     //    {
     //      data: {
@@ -208,7 +216,7 @@ app.post('/get/:action', async function (req, res) {
                 }
 
                 console.log('200 pcap found.', apiResponse);
-                res.send(apiResponse)
+                res.json(apiResponse);
 
                 return;
             }

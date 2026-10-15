@@ -12,6 +12,7 @@
   "dependencies": {
     "chokidar": "^4.0.3",
     "express": "^4.22.3",
+    "express-rate-limit": "^7.5.0",
     "find": "^0.2.9",
     "lru": "^3.1.0",
     "uuid": "^11.1.1"
