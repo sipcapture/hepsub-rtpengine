@@ -31,14 +31,12 @@ const fs = require('fs');
 
 const express = require('express');
 const app = express();
-const request = require('request');
-const bodyParser = require('body-parser');
-app.use(bodyParser.json());
+app.use(express.json());
 
 const port = settings.port;
 const debugActive = debug || false;
 
-const uuidV1 = require('uuid/v1');
+const { v1: uuidV1 } = require('uuid');
 let agentUUID = uuidV1();
 const ttl = settings.ttl;
 
@@ -245,21 +243,33 @@ const refreshSubscription = function () {
             console.log("body:", JSON.stringify(requestOptions));
         }
 
-        request(requestOptions, function (error, response, body) {
-            if (!error && (response.statusCode === 200 || response.statusCode === 201)) {
-                if (debugActive) {
-                    console.log("hepsub session refreshed. response:", body)
-                }
-            } else {
-                if (debugActive) {
+        fetch(requestOptions.url, {
+            method: requestOptions.method,
+            headers: {
+                'Content-Type': 'application/json',
+                ...requestOptions.headers,
+            },
+            body: JSON.stringify(requestOptions.json),
+        })
+            .then(async (response) => {
+                const body = await response.json().catch(() => null);
+                if (response.status === 200 || response.status === 201) {
+                    if (debugActive) {
+                        console.log('hepsub session refreshed. response:', body);
+                    }
+                } else if (debugActive) {
                     if (body && body.message) {
-                        console.log('hepsub session refresh. error: ', error, 'body:', body.message);
+                        console.log('hepsub session refresh. error: body:', body.message);
                     } else {
-                        console.log('homer subscription error: ', error);
+                        console.log('homer subscription error: status', response.status);
                     }
                 }
-            }
-        });
+            })
+            .catch((error) => {
+                if (debugActive) {
+                    console.log('homer subscription error: ', error);
+                }
+            });
     } catch (e) {
         console.error('homer subscription failed with error: ', e);
     }
